@@ -4,11 +4,13 @@ import com.google.gson.Gson;
 import nl.dvberkel.dyck.State;
 import nl.dvberkel.repository.storage.GsonStorage;
 import nl.dvberkel.repository.storage.InMemoryStorage;
+import nl.dvberkel.repository.storage.RedisStorage;
 import nl.dvberkel.repository.storage.Storage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,11 +27,12 @@ public class RepositoryTest {
         this.factory = factory;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> data(){
         Collection<Object[]> data = new ArrayList<Object[]>();
         data.add(new Object[]{ new InMemoryStorageFactory() });
         data.add(new Object[]{ new GsonStorageFactory() });
+//        data.add(new Object[]{ new RedisStorageFactory() });
         return data;
     }
 
@@ -64,6 +67,11 @@ class InMemoryStorageFactory implements StorageFactory {
     public Storage build() {
         return new InMemoryStorage();
     }
+
+    @Override
+    public String toString() {
+        return "InMemoryStorageFactory";
+    }
 }
 
 class GsonStorageFactory implements StorageFactory {
@@ -71,4 +79,28 @@ class GsonStorageFactory implements StorageFactory {
     public Storage build() {
         return new GsonStorage(new Gson());
     }
+
+    @Override
+    public String toString() {
+        return "GsonStorageFactory";
+    }
 }
+
+//class RedisStorageFactory implements StorageFactory {
+//    private Jedis jedis;
+//
+//    {
+//        jedis = new Jedis("localhost", 6379);
+//    }
+//
+//    @Override
+//    public Storage build() {
+//
+//        return new RedisStorage(jedis, new Gson());
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "RedisStorageFactory";
+//    }
+//}
